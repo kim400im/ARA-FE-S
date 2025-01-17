@@ -537,43 +537,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         //   chatMessages.appendChild(messageDiv);
         // });
 
-        // 메시지 입력 및 전송
-        // sendMessageButton.onclick = async () => {
-        //   const userMessage = messageInput.value.trim();
-        //   if (!userMessage) return;
-
-        //   try {
-        //     const sendResponse = await fetch("http://localhost:8008/chat/new", {
-        //       method: "POST",
-        //       headers: {
-        //         "Content-Type": "application/json",
-        //         Authorization: `Bearer ${token}`,
-        //       },
-        //       body: JSON.stringify({ message: userMessage, chatroom_id: chatroomId }),
-        //     });
-
-        //     const sendResult = await sendResponse.json();
-        //     if (sendResponse.ok) {
-        //       const userMessageDiv = document.createElement("div");
-        //       userMessageDiv.classList.add("message", "user-message");
-        //       userMessageDiv.textContent = userMessage;
-        //       chatMessages.appendChild(userMessageDiv);
-
-        //       const botMessageDiv = document.createElement("div");
-        //       botMessageDiv.classList.add("message", "bot-message");
-        //       botMessageDiv.textContent = sendResult.botMessage;
-        //       chatMessages.appendChild(botMessageDiv);
-
-        //       chatMessages.scrollTop = chatMessages.scrollHeight;
-        //       messageInput.value = "";
-        //     } else {
-        //       alert("메시지 전송에 실패했습니다.");
-        //     }
-        //   } catch (err) {
-        //     console.error("Error sending message:", err);
-        //     alert("서버 오류로 메시지 전송에 실패했습니다.");
-        //   }
-        // };
+        
       } catch (error) {
         console.error("Error fetching chatroom:", error);
         alert("채팅방 정보를 불러오는 중 오류가 발생했습니다.");
