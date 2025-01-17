@@ -7,9 +7,7 @@ const chatAction = document.querySelector('.chat-actions');
 
 // 입력창 내용따라 send 버튼 활성화
 messageInput.addEventListener('input', updateSendButtonState);
-
-// 초기 상태도 검사 (새로고침하면 내용이 비어있으므로 disabled)
-updateSendButtonState();
+updateSendButtonState(); // 초기 상태도 검사
 
 function updateSendButtonState() {
   // 입력값이 비어있는지 확인
@@ -123,6 +121,67 @@ async function sendMessage() {
     console.error("Error sending chat message:", error);
   }
 }
+
+// 채팅방 데이터 로드
+async function loadChatroomData() {
+  const token = localStorage.getItem("token");
+  const currentPath = window.location.pathname;
+  const chatroomId = currentPath.split("=")[1];
+
+  try {
+    const response = await fetch(`http://localhost:8008/chatroom/${chatroomId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch chatroom data");
+    }
+
+    const { chatroom, messages } = await response.json();
+
+    // UI 초기화
+    chatDescription.classList.add("hide");
+    chatAction.classList.add("hide");
+    chatInput.classList.add("down");
+
+    let chatMessages = document.getElementById("chatMessages");
+    if (!chatMessages) {
+      chatMessages = document.createElement("div");
+      chatMessages.id = "chatMessages";
+      chatMessages.classList.add("chat-messages");
+      chatContent.appendChild(chatMessages);
+    } else {
+      chatMessages.innerHTML = ""; // 기존 메시지 초기화
+    }
+
+    // 메시지를 UI에 추가
+    messages.forEach((message) => {
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add(
+        "message",
+        message.sender_type === "user" ? "user-message" : "bot-message"
+      );
+      messageDiv.textContent = message.content;
+      chatMessages.appendChild(messageDiv);
+    });
+
+    // 스크롤을 최신 메시지로 이동
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  } catch (error) {
+    console.error("Error loading chatroom data:", error);
+    alert("채팅방 데이터를 불러오는 중 오류가 발생했습니다.");
+  }
+}
+
+// 페이지 로드 시 채팅방 데이터 로드
+document.addEventListener("DOMContentLoaded", () => {
+  loadChatroomData();
+});
+
 
 
 const userButton = document.querySelector('.user-icon');
