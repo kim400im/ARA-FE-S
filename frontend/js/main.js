@@ -5,6 +5,16 @@ const chatContent = document.querySelector('.chat-content');
 const chatInput = document.querySelector('.chat-input');
 const chatAction = document.querySelector('.chat-actions');
 
+const userButton = document.querySelector('.user-icon');
+const loginPopup = document.getElementById('login-popup');
+const closeButton = document.querySelector('.close-button');
+const loginButton = document.querySelector('.login-button')
+const loginInput = document.querySelector('.login-form input#userid')
+const userInfoPopup = document.getElementById('user-info-popup');
+const userInfoName = document.getElementById('user-info');
+const userInfoId = document.getElementById('user-info-id');
+const logoutButton = document.getElementById('logout-button');
+
 // 입력창 내용따라 send 버튼 활성화
 messageInput.addEventListener('input', updateSendButtonState);
 
@@ -44,9 +54,6 @@ function autoResize() {
 async function sendMessage() {
   const userMessage = messageInput.value.trim();
 
-  chatDescription.classList.add('hide');
-  chatAction.classList.add('hide');
-
   let chatMessages = document.getElementById('chatMessages');
   if (!chatMessages) {
     chatMessages = document.createElement('div');
@@ -57,6 +64,20 @@ async function sendMessage() {
 
   // 입력 값이 비어 있으면 종료
   if (!userMessage) return;
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    console.log("not login")
+    alert("로그인이 필요합니다.");
+    // 로그인 팝업 열기
+    const loginPopup = document.getElementById("login-popup");
+    loginPopup.classList.remove("hidden");
+    return;
+  }
+
+  chatDescription.classList.add('hide');
+  chatAction.classList.add('hide');
 
   // 사용자 메시지 요소 생성
   const messageDiv = document.createElement('div');
@@ -125,15 +146,7 @@ async function sendMessage() {
 }
 
 
-const userButton = document.querySelector('.user-icon');
-const loginPopup = document.getElementById('login-popup');
-const closeButton = document.querySelector('.close-button');
-const loginButton = document.querySelector('.login-button')
-const loginInput = document.querySelector('.login-form input#userid')
-const userInfoPopup = document.getElementById('user-info-popup');
-const userInfoName = document.getElementById('user-info');
-const userInfoId = document.getElementById('user-info-id');
-const logoutButton = document.getElementById('logout-button');
+
 
 // user 정보 test용
 // localStorage.setItem("userInfo", JSON.stringify({ username: "전소원", userid: "sowon"}));
@@ -476,9 +489,6 @@ deleteButton.addEventListener('click', () => {
     closePopup();
   }
 });
-
-
-
 
 
 // 코드 짜보기
