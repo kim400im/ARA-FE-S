@@ -484,11 +484,11 @@ deleteButton.addEventListener('click', () => {
 // 코드 짜보기
 document.addEventListener("DOMContentLoaded", async () => {
   const token = localStorage.getItem("token");
-  if (!token) {
-    alert("로그인이 필요합니다.");
-    window.location.href = "/login"; // 로그인 페이지로 리다이렉트
-    return;
-  }
+  // if (!token) {
+  //   alert("로그인이 필요합니다.");
+  //   window.location.href = "/login"; // 로그인 페이지로 리다이렉트
+  //   return;
+  // }
 
   
   // 라우팅 함수
