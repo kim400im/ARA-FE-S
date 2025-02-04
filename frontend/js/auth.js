@@ -2,7 +2,7 @@
 import { loginPopup, userInfoPopup, userInfoName, userInfoId, logoutButton } from './dom-elements.js';
 
 // 로그인 팝업 열기
-export async function fetchUserInfo() {
+export async function fetchUserInfo(token) {
   // const token = localStorage.getItem("token");
   
   // if (!token) {

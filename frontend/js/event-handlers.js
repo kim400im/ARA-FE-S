@@ -28,7 +28,7 @@ export function initializeEventHandlers() {
   userButton.addEventListener('click', () => {
     const token = localStorage.getItem('token');
     if (token) {
-      fetchUserInfo();
+      fetchUserInfo(token);
     } else {
       loginPopup.classList.remove('hidden');
     }
