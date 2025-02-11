@@ -1,6 +1,6 @@
 // event-handlers.js
 import { messageInput, sendButton, loginPopup, signInButton, closeButtons, userButton, userInfoPopup, logoutButton, loginButton, signInPopup, addChatButton } from './dom-elements.js';
-import { updateSendButtonState, sendMessage, autoResize, loadChatroomData, addNewChat } from './chat-actions.js';
+import { updateSendButtonState, sendMessage, autoResize, loadChatroomData } from './chat-actions.js';
 import { initializeFileHandlers } from './file-handler.js';
 import { handleLogin, handleLogout, fetchUserInfo } from './auth.js';
 import { initializeRegistrationHandlers } from './registration.js';
@@ -34,11 +34,6 @@ export function initializeEventHandlers() {
     }
   });
 
-  // 팝업 닫기 버튼
-  userInfoPopup.querySelector('.close-button').addEventListener('click', function () {
-    userInfoPopup.classList.add('hidden');
-  });
-
   // 회원가입 버튼
   signInButton.addEventListener('click', (event) => {
     event.preventDefault(); // 기본 폼 제출 방지
@@ -46,11 +41,12 @@ export function initializeEventHandlers() {
     signInPopup.classList.remove('hidden'); // 회원가입 팝업 표시
   });
 
-  // 회원가입 팝업에서 닫기 버튼 클릭시 팝업 닫기
+  // 닫기 버튼: 로그인 및 회원가입 팝업 닫기
   closeButtons.forEach((button) => {
     button.addEventListener("click", () => {
       loginPopup.classList.add("hidden");
       signInPopup.classList.add("hidden");
+      userInfoPopup.classList.add('hidden');
     })
   })
 
@@ -63,11 +59,11 @@ export function initializeEventHandlers() {
   // 사이드바 기능 초기화
   initializeSidebar();
 
+  // 채팅방 관리(채팅방 추가 및 이동) 초기화
+  initializeChatManagement();
+
   // 채팅방 데이터 로드
   loadChatroomData();
-
-  // 채팅방 관리 기능 초기화
-  initializeChatManagement();
 
   // 로그인 이벤트
   loginButton.addEventListener('click', async (event) => {
@@ -79,13 +75,13 @@ export function initializeEventHandlers() {
     handleLogin(userid, password);
   });
 
+  // 페이지 로드 시 URL에 chatroom_id가 있다면 채팅방 데이터 로드
+  const currentPath = window.location.pathname;
+  if (currentPath.includes("chatroom=")) {
+    loadChatroomData();
+  };
+
   // 파일 처리 초기화
   initializeFileHandlers();
-
-  // 채팅방 추가
-  let chatCount = 1; // 기본 값 설정
-  addChatButton.addEventListener('click', function () {
-    addNewChat(chatCount);
-  })
 
 }

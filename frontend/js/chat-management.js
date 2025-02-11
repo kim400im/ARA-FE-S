@@ -1,16 +1,98 @@
 // chat-management.js
-import { chatsList, popup, deleteButton, closePopupButton, renameInput, saveRenameButton } from './dom-elements.js';
+import { popup, deleteButton, closePopupButton, renameInput, saveRenameButton, chatsListUl, addChatButton, chatDescription, chatAction, chatInput } from './dom-elements.js';
+import { loadChatroomData } from './chat-actions.js';
+
+// 새 채팅방 생성 API 호출 (서버에서 chatroomId를 반환하도록 구현)
+export async function createNewChatRoom() {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:8008/chat/new", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      // 필요한 경우 추가 데이터를 전송할 수 있습니다.
+      body: JSON.stringify({ message: userMessage, chatroom_id: chatroomId })
+    });
+    const result = await response.json();
+    console.log("Chat Response:", result);
+
+    if (response.ok && result.chatroomId) {
+      return result.chatroomId;
+    } else {
+      throw new Error("Failed to create new chat room");
+    }
+  } catch (error) {
+    console.error("Error creating new chat room:", error);
+    alert("새 채팅방 생성에 실패했습니다.");
+    return null;
+  }
+}
+
+// 채팅방 추가
+let chatCount = 0; // 기본 값 설정
+export function addNewChat(chatroomId) {
+  chatCount++; // 새로운 채팅 번호 증가
+  const newChat = document.createElement('li');
+  newChat.textContent = `과목 ${chatCount}`;
+  newChat.id = chatroomId; // newChat의 id에 chatroom_id 저장
+
+  const moreButton = document.createElement('button');
+  moreButton.classList.add('chat-more-button');
+  moreButton.innerHTML = '<div class="material-icons">more_horiz</div>';
+
+  newChat.appendChild(moreButton);
+  chatsListUl.appendChild(newChat);
+  return newChat;
+}
 
 let selectedChat = null;
 
 export function initializeChatManagement() {
-  // 채팅방 옵션 버튼 클릭 시 팝업 열기
-  chatsList.addEventListener('click', (e) => {
-    if (e.target.closest('.chat-more-button')) {
-      selectedChat = e.target.closest('li');
+  // 채팅 리스트 항목 클릭 시 해당 채팅방으로 이동하도록 URL 업데이트
+  chatsListUl.addEventListener('click', (e) => {
+    // 채팅 옵션 버튼(.chat-more-button)이 아닌 곳을 클릭한 경우
+    if (!e.target.closest('.chat-more-button')) {
+      const clickedChat = e.target.closest('li');
+      if (clickedChat) {
+        const chatroomId = clickedChat.id;
+        if (chatroomId) {
+          history.pushState(null, "", `/chatroom=${chatroomId}`);
+          loadChatroomData();
+        }
+      }
+    } else {
+      // 옵션 버튼 클릭 시 팝업 처리 (기존 기능)
       openPopup();
     }
   });
+
+// 채팅방 추가 클릭 시, 메인페이지로 이동
+addChatButton.addEventListener('click', async () => {
+  // URL에서 chatroomId 제거: 메인페이지로 이동
+  history.pushState(null, "", "/");
+
+  // 기존에 채팅방 데이터가 있다면 제거 (옵션)
+  const chatMessages = document.getElementById('chatMessages');
+  if (chatMessages) {
+    chatMessages.remove();
+  }
+
+  // 메인페이지 UI를 복원 (예: 채팅 설명, 액션 버튼 표시)
+  if (chatDescription) chatDescription.classList.remove('hide');
+  if (chatAction) chatAction.classList.remove('hide');
+  if (chatInput) chatInput.classList.remove('down');
+
+});
+
+  // // 채팅방 옵션 버튼 클릭 시 팝업 열기
+  // chatsList.addEventListener('click', (e) => {
+  //   if (e.target.closest('.chat-more-button')) {
+  //     selectedChat = e.target.closest('li');
+  //     openPopup();
+  //   }
+  // });
 
   // 팝업 닫기 버튼
   closePopupButton.addEventListener('click', closePopup);
