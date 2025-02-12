@@ -1,6 +1,7 @@
 // chat-management.js
-import { popup, deleteButton, closePopupButton, renameInput, saveRenameButton, chatsListUl, addChatButton, chatDescription, chatAction, chatInput } from './dom-elements.js';
+import { popup, deleteButton, closePopupButton, renameInput, saveRenameButton, chatsListUl, addChatButton, chatDescription, chatAction, chatInput, headerLogo } from './dom-elements.js';
 import { loadChatroomData } from './chat-actions.js';
+let chatDescText = chatDescription.querySelector('.chat-description-text');
 
 // 새 채팅방 생성 API 호출 (서버에서 chatroomId를 반환하도록 구현)
 export async function createNewChatRoom() {
@@ -64,11 +65,73 @@ export function initializeChatManagement() {
       }
     } else {
       // 옵션 버튼 클릭 시 팝업 처리 (기존 기능)
-      openPopup();
-    }
+        selectedChat = e.target.closest('li');
+        openPopup();
+      }
   });
 
-// 채팅방 추가 클릭 시, 메인페이지로 이동
+  // 팝업 닫기 버튼
+  closePopupButton.addEventListener('click', closePopup);
+
+  // 채팅방 이름 변경
+  saveRenameButton.addEventListener('click', renameChat);
+
+  // 채팅방 삭제
+  deleteButton.addEventListener('click', deleteChat);
+
+  // 팝업 열기
+  function openPopup() {
+    popup.classList.remove('hidden');
+  };
+
+  // 팝업 닫기
+  function closePopup() {
+    popup.classList.add('hidden');
+    selectedChat = null;
+  };
+
+  // 채팅방 이름 변경
+  function renameChat() {
+    const newName = renameInput.value.trim();
+    if (newName && selectedChat) {
+      selectedChat.firstChild.textContent = newName + ' ';
+      renameInput.value = '';
+      closePopup();
+    }
+  };
+
+  // 채팅방 삭제
+  function deleteChat() {
+    if (selectedChat && confirm(`채팅방을 삭제하시겠습니까?`)) {
+      selectedChat.remove();
+      closePopup();
+    }
+
+    goToMainPage();
+  };
+};
+
+// 메인페이지 이동 함수
+export function goToMainPage() {
+  // URL에서 chatroomId 제거하고 메인페이지로 이동
+  history.pushState(null, "", "/");
+
+  // 채팅 메시지 영역 제거 (채팅방 내용 초기화)
+  const chatMessages = document.getElementById('chatMessages');
+  if (chatMessages) {
+    chatMessages.remove();
+  }
+
+  // 메인페이지 UI를 복원 (예: 채팅 설명, 액션 버튼 표시)
+  if (chatDescText) {
+    chatDescText.textContent = "성공적인 학습을 위한 최고의 서포터 'ARA'";
+  }
+  if (chatDescription) chatDescription.classList.remove('hide');
+  if (chatAction) chatAction.classList.remove('hide');
+  if (chatInput) chatInput.classList.remove('down');
+};
+
+// 채팅방 추가 클릭 UI 메인페이지로 이동
 addChatButton.addEventListener('click', async () => {
   // URL에서 chatroomId 제거: 메인페이지로 이동
   history.pushState(null, "", "/");
@@ -80,55 +143,62 @@ addChatButton.addEventListener('click', async () => {
   }
 
   // 메인페이지 UI를 복원 (예: 채팅 설명, 액션 버튼 표시)
+  if (chatDescText) {
+    chatDescText.textContent = '새로운 학습을 시작하세요';
+  }
   if (chatDescription) chatDescription.classList.remove('hide');
   if (chatAction) chatAction.classList.remove('hide');
   if (chatInput) chatInput.classList.remove('down');
 
 });
 
-  // // 채팅방 옵션 버튼 클릭 시 팝업 열기
-  // chatsList.addEventListener('click', (e) => {
-  //   if (e.target.closest('.chat-more-button')) {
-  //     selectedChat = e.target.closest('li');
-  //     openPopup();
-  //   }
-  // });
-
-  // 팝업 닫기 버튼
-  closePopupButton.addEventListener('click', closePopup);
-
-  // 채팅방 이름 변경
-  saveRenameButton.addEventListener('click', renameChat);
-
-  // 채팅방 삭제
-  deleteButton.addEventListener('click', deleteChat);
-};
-
-// 팝업 열기
-function openPopup() {
-  popup.classList.remove('hidden');
-};
-
-// 팝업 닫기
-function closePopup() {
-  popup.classList.add('hidden');
-  selectedChat = null;
-};
-
-// 채팅방 이름 변경
-function renameChat() {
-  const newName = renameInput.value.trim();
-  if (newName && selectedChat) {
-    selectedChat.firstChild.textContent = newName + ' ';
-    renameInput.value = '';
-    closePopup();
+// 채팅방 목록 불러오기
+export async function loadChatrooms() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.warn("토큰이 없어 채팅방 목록을 불러올 수 없습니다.");
+    return;
   }
-};
 
-// 채팅방 삭제
-function deleteChat() {
-  if (selectedChat && confirm(`채팅방을 삭제하시겠습니까?`)) {
-    selectedChat.remove();
-    closePopup();
+  try {
+    const response = await fetch("http://localhost:8008/api/chatrooms", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      // API 응답에서 chatrooms 배열을 가져옴
+      // 기존 목록을 지우고 새로 채워줍니다.
+      chatsListUl.innerHTML = "";
+      data.chatrooms.forEach(chatroom => {
+        // 새로운 li 태그 생성
+        const li = document.createElement('li');
+        li.id = chatroom.id;
+
+        const prefix = "Chatroom for ";
+        let displayTitle = chatroom.title;
+        if (displayTitle.startsWith(prefix)) {
+          displayTitle = displayTitle.substring(prefix.length);
+        }
+        li.textContent = displayTitle;
+
+        // 옵션 버튼(더보기 버튼) 추가 (원래 addNewChat과 동일한 방식)
+        const moreButton = document.createElement('button');
+        moreButton.classList.add('chat-more-button');
+        moreButton.innerHTML = '<div class="material-icons">more_horiz</div>';
+        li.appendChild(moreButton);
+
+        // 사이드바에 li 태그 추가
+        chatsListUl.appendChild(li);
+      });
+    } else {
+      console.error("채팅방 목록 불러오기 실패:", response.status, response.statusText);
+    }
+  } catch (error) {
+    console.error("채팅방 목록 로딩 중 에러 발생:", error);
   }
 };

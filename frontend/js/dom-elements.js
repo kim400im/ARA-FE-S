@@ -38,3 +38,5 @@ export const deleteButton = document.getElementById('delete-chat');
 export const closePopupButton = document.getElementById('close-popup');
 export const renameInput = document.getElementById('chat-name');
 export const saveRenameButton = document.getElementById('save-rename');
+
+export const headerLogo = document.querySelector('.header-logo-button');

@@ -1,5 +1,6 @@
 // auth.js
-import { loginPopup, userInfoPopup, userInfoName, userInfoId, logoutButton } from './dom-elements.js';
+import { loginPopup, userInfoPopup, userInfoName, userInfoId, logoutButton, chatsListUl } from './dom-elements.js';
+import { goToMainPage, loadChatrooms } from './chat-management.js';
 
 // 로그인 팝업 열기
 export async function fetchUserInfo(token) {
@@ -99,6 +100,14 @@ export async function handleLogout() {
       // document.cookie = "token=; Max-Age=0; path=/;";
       alert("로그아웃 되었습니다.");
       userInfoPopup.classList.add("hidden");
+
+      // 채팅방 목록 비움
+      if (chatsListUl) {
+        chatsListUl.innerHTML = "";
+      };
+
+      // 메인페이지로 이동
+      goToMainPage();
     } else {
       alert("로그아웃 처리 중 오류가 발생했습니다.");
     }

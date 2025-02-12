@@ -1,11 +1,11 @@
 // event-handlers.js
-import { messageInput, sendButton, loginPopup, signInButton, closeButtons, userButton, userInfoPopup, logoutButton, loginButton, signInPopup, addChatButton } from './dom-elements.js';
+import { messageInput, sendButton, loginPopup, signInButton, closeButtons, userButton, userInfoPopup, logoutButton, loginButton, signInPopup, headerLogo, chatDescription, chatAction, chatInput } from './dom-elements.js';
 import { updateSendButtonState, sendMessage, autoResize, loadChatroomData } from './chat-actions.js';
 import { initializeFileHandlers } from './file-handler.js';
 import { handleLogin, handleLogout, fetchUserInfo } from './auth.js';
 import { initializeRegistrationHandlers } from './registration.js';
 import { initializeSidebar } from './sidebar.js';
-import { initializeChatManagement } from './chat-management.js';
+import { initializeChatManagement, loadChatrooms, goToMainPage } from './chat-management.js';
 
 export function initializeEventHandlers() {
   // 입력창 상태 업데이트
@@ -65,6 +65,9 @@ export function initializeEventHandlers() {
   // 채팅방 데이터 로드
   loadChatroomData();
 
+  // 채팅방 목록 로드
+  loadChatrooms();
+
   // 로그인 이벤트
   loginButton.addEventListener('click', async (event) => {
     event.preventDefault(); // 기본 폼 제출 방지
@@ -72,7 +75,13 @@ export function initializeEventHandlers() {
     const userid = document.querySelector('input#userid').value.trim();
     const password = document.querySelector('input#password').value.trim();
 
-    handleLogin(userid, password);
+    await handleLogin(userid, password);
+
+    // 로그인 성공 시 토큰이 저장되어 있다면 채팅방 목록 불러오기
+    if (localStorage.getItem('token')) {
+      loadChatrooms();
+    }
+
   });
 
   // 페이지 로드 시 URL에 chatroom_id가 있다면 채팅방 데이터 로드
@@ -83,5 +92,10 @@ export function initializeEventHandlers() {
 
   // 파일 처리 초기화
   initializeFileHandlers();
+
+  // 로고 버튼 클릭 시, 메인페이지로 이동
+  headerLogo.addEventListener('click', async () => {
+    goToMainPage  
+  });
 
 }
