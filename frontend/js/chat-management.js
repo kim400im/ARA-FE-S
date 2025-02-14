@@ -101,13 +101,46 @@ export function initializeChatManagement() {
   };
 
   // 채팅방 삭제
-  function deleteChat() {
-    if (selectedChat && confirm(`채팅방을 삭제하시겠습니까?`)) {
-      selectedChat.remove();
-      closePopup();
+  async function deleteChat() {
+    const token = localStorage.getItem("token");
+    const selectedChatroomId = selectedChat.id;
+    if (!selectedChat) {
+      console("삭제할 채팅방이 선택되지 않았습니다.");
+      return;
     }
-
-    goToMainPage();
+    if (!token) {
+      alert("인증 토큰이 없습니다. 다시 로그인해 주세요.");
+      return;
+    }
+    if (selectedChat && confirm("정말로 이 채팅방을 삭제하시겠습니까?")) {
+      try {
+        const response = await fetch(`http://localhost:8008/api/chatroom/${selectedChatroomId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+    
+        const result = await response.json();
+    
+        if (response.ok) {
+          alert("채팅방이 삭제되었습니다.");
+          closePopup();
+          loadChatrooms(); // 채팅방 목록 다시 불러오기
+          // 현재 채팅방이 삭제되는 경우 메인 페이지로 이동
+          const currentPath = window.location.pathname.split("=")[1];
+          if (selectedChatroomId === currentPath) {
+            goToMainPage();
+          }
+        } else {
+          alert(result.message || "채팅방 삭제 중 오류가 발생했습니다.");
+        }
+      } catch (error) {
+        console.error("채팅방 삭제 중 오류:", error);
+        alert("서버 오류가 발생했습니다.");
+      }
+    };
   };
 };
 
