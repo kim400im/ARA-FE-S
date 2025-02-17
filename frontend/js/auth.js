@@ -2,7 +2,7 @@
 import { loginPopup, userInfoPopup, userInfoName, userInfoId, logoutButton, chatsListUl } from './dom-elements.js';
 import { goToMainPage, loadChatrooms } from './chat-management.js';
 
-// 로그인 팝업 열기
+// 로그인상태에서 회원 정보 열기
 export async function fetchUserInfo(token) {
   // const token = localStorage.getItem("token");
   

@@ -66,9 +66,12 @@ export function initializeChatManagement() {
     } else {
       // 옵션 버튼 클릭 시 팝업 처리 (기존 기능)
         selectedChat = e.target.closest('li');
+
         openPopup();
       }
   });
+
+  const selectedChatroomId = selectedChat.id;
 
   // 팝업 닫기 버튼
   closePopupButton.addEventListener('click', closePopup);
@@ -91,19 +94,53 @@ export function initializeChatManagement() {
   };
 
   // 채팅방 이름 변경
-  function renameChat() {
-    const newName = renameInput.value.trim();
-    if (newName && selectedChat) {
-      selectedChat.firstChild.textContent = newName + ' ';
+  async function renameChat() {
+    if (!selectedChatroomId) {
+      alert("수정할 채팅방이 선택되지 않았습니다.");
+      return;
+    }
+    const newTitle = renameInput.value.trim();
+    if (!newTitle) {
+      alert("새로운 채팅방 이름을 입력해주세요.");
+      return;
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("인증 토큰이 없습니다. 다시 로그인해 주세요.");
+      return;
+    }
+    if (newTitle && selectedChat) {
+      selectedChat.firstChild.textContent = newTitle + ' ';
       renameInput.value = '';
-      closePopup();
+      try {
+        const response = await fetch(`http://localhost:8008/api/chatroom/${selectedChatroomId}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ newTitle })
+        });
+    
+        const result = await response.json();
+    
+        if (response.ok) {
+          alert("채팅방 이름이 변경되었습니다.");
+          closePopup();
+          loadChatrooms(); // 채팅방 목록 새로고침
+        } else {
+          alert(result.message || "채팅방 이름 변경 중 오류가 발생했습니다.");
+        }
+      } catch (error) {
+        console.error("채팅방 이름 변경 중 오류:", error);
+        alert("서버 오류가 발생했습니다.");
+      }
     }
   };
 
   // 채팅방 삭제
   async function deleteChat() {
     const token = localStorage.getItem("token");
-    const selectedChatroomId = selectedChat.id;
     if (!selectedChat) {
       console("삭제할 채팅방이 선택되지 않았습니다.");
       return;
