@@ -116,9 +116,21 @@ export async function sendMessage() {
 export async function loadChatroomData() {
   const token = localStorage.getItem("token");
 
+  // 로그인 상태 확인: token이 없으면 실행 중단
+  if (!token) {
+    console.warn("로그인 상태가 아닙니다. 채팅방 데이터를 불러오지 않습니다.");
+    return;
+  }
+
 	// URL에서 chatroom_id 추출
   const currentPath = window.location.pathname;
   const chatroomId = currentPath.split("=")[1];
+
+  // 채팅방 ID가 없는 경우 실행 중단
+  if (!chatroomId) {
+    console.warn("채팅방 ID가 없으므로 채팅 데이터를 불러오지 않습니다.");
+    return;
+  }
 
   try {
     const response = await fetch(`http://localhost:8008/chatroom/${chatroomId}`, {

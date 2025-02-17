@@ -32,9 +32,9 @@ export async function fetchUserInfo(token) {
         userInfoPopup.classList.remove("hidden");
         userInfoName.textContent = `환영합니다, ${userInfo.username}님!`;
         userInfoId.textContent = `아이디: ${userInfo.userid}`;
-      } else {
-        console.log("Response not OK:", response.status, response.statusText); // 디버깅 추가
-        alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+      } else if (response.status === 401) {
+        // console.log("Response not OK:", response.status, response.statusText); // 디버깅 추가
+        console.warn("토큰이 만료됨. 로그인 창을 표시합니다.");
         localStorage.removeItem("token");
         loginPopup.classList.remove("hidden");
       }
