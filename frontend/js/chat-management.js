@@ -32,11 +32,9 @@ export async function createNewChatRoom() {
 }
 
 // 채팅방 추가
-let chatCount = 0; // 기본 값 설정
 export function addNewChat(chatroomId) {
-  chatCount++; // 새로운 채팅 번호 증가
   const newChat = document.createElement('li');
-  newChat.textContent = `과목 ${chatCount}`;
+  newChat.textContent = `새 과목`;
   newChat.id = chatroomId; // newChat의 id에 chatroom_id 저장
 
   const moreButton = document.createElement('button');
@@ -71,7 +69,7 @@ export function initializeChatManagement() {
       }
   });
 
-  const selectedChatroomId = selectedChat.id;
+
 
   // 팝업 닫기 버튼
   closePopupButton.addEventListener('click', closePopup);
@@ -95,6 +93,7 @@ export function initializeChatManagement() {
 
   // 채팅방 이름 변경
   async function renameChat() {
+    const selectedChatroomId = selectedChat.id;
     if (!selectedChatroomId) {
       alert("수정할 채팅방이 선택되지 않았습니다.");
       return;
@@ -141,6 +140,7 @@ export function initializeChatManagement() {
   // 채팅방 삭제
   async function deleteChat() {
     const token = localStorage.getItem("token");
+    const selectedChatroomId = selectedChat.id;
     if (!selectedChat) {
       console("삭제할 채팅방이 선택되지 않았습니다.");
       return;
