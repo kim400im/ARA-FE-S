@@ -1,6 +1,6 @@
 // auth.js
 import { loginPopup, userInfoPopup, userInfoName, userInfoId, logoutButton, chatsListUl } from './dom-elements.js';
-import { goToMainPage, loadChatrooms } from './chat-management.js';
+import { goToMainPage } from './chat-management.js';
 
 // 로그인상태에서 회원 정보 열기
 export async function fetchUserInfo(token) {

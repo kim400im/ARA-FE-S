@@ -1,5 +1,5 @@
 // chat-actions.js
-import { messageInput, chatDescription, chatAction, chatContent, chatInput, chatsListUl } from './dom-elements.js';
+import { messageInput, chatDescription, chatAction, chatContent, chatInput, loginPopup } from './dom-elements.js';
 import { addNewChat } from './chat-management.js';
 
 // 버튼 활성화 상태 업데이트
@@ -23,6 +23,12 @@ export function autoResize() {
 // 메세지 전송
 export async function sendMessage() {
   const userMessage = messageInput.value.trim();
+
+  // 로그인 안한 상태로 메세지 전송시 로그인 팝업창 열림
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return loginPopup.classList.remove('hidden');
+  }
 
   // 입력 값이 비어 있으면 종료
   if (!userMessage) return;
