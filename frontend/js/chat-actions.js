@@ -56,8 +56,8 @@ export async function sendMessage() {
   updateSendButtonState();
   messageInput.style.height = 'auto';
 
-  // // 스크롤을 최신 메시지로
-  // chatMessages.scrollTop = chatMessages.scrollHeight;
+  // 스크롤을 최신 메시지로
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 
   // chat-input 아래로 이동
   chatInput.classList.add('down');
@@ -104,9 +104,19 @@ export async function sendMessage() {
 
       // 챗봇 응답 메시지 추가
       const botMessageDiv = document.createElement('div');
+      const typedSpan = document.createElement('span');
+      botMessageDiv.appendChild(typedSpan);
       botMessageDiv.classList.add('message', 'bot-message');
-      botMessageDiv.textContent = result.botMessage; // 서버에서 받은 botMessage
       chatMessages.appendChild(botMessageDiv);
+
+      // 챗봇 응답 스트림 에니메이션 옵션 설정 및 인스턴스 생성
+      const typedOptions = {
+        strings: [result.botMessage],  // 서버에서 받은 메시지
+        typeSpeed: 40,                 // 타이핑 속도 (밀리초 단위)
+        showCursor: false              // 커서 표시 여부
+      };
+
+      new Typed(typedSpan, typedOptions);
 
       // 스크롤을 최신 메시지로
       chatMessages.scrollTop = chatMessages.scrollHeight;
