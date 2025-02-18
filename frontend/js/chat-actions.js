@@ -135,6 +135,7 @@ export async function loadChatroomData() {
   // 로그인 상태 확인: token이 없으면 실행 중단
   if (!token) {
     console.warn("로그인 상태가 아닙니다. 채팅방 데이터를 불러오지 않습니다.");
+    loginPopup.classList.remove("hidden"); // 로그인 창 표시
     return;
   }
 
@@ -157,6 +158,11 @@ export async function loadChatroomData() {
     });
 
     if (!response.ok) {
+      if (response.status === 403 || response.status === 401) {
+        console.warn("토큰이 만료되었습니다. 로그인 창을 표시합니다.");
+        localStorage.removeItem("token");
+        loginPopup.classList.remove("hidden");
+      }
       throw new Error("Failed to fetch chatroom data");
     }
 

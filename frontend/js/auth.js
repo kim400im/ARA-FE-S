@@ -4,6 +4,12 @@ import { goToMainPage } from './chat-management.js';
 
 // 로그인상태에서 회원 정보 열기
 export async function fetchUserInfo(token) {
+
+  if (!token) {
+    console.warn("로그인되지 않은 상태입니다. 로그인 창을 표시합니다.");
+    loginPopup.classList.remove("hidden");
+    return;
+  }
   // const token = localStorage.getItem("token");
   
   // if (!token) {
@@ -32,7 +38,7 @@ export async function fetchUserInfo(token) {
         userInfoPopup.classList.remove("hidden");
         userInfoName.textContent = `환영합니다, ${userInfo.username}님!`;
         userInfoId.textContent = `아이디: ${userInfo.userid}`;
-      } else if (response.status === 401) {
+      } else if (response.status === 401 || response.status === 403) {
         // console.log("Response not OK:", response.status, response.statusText); // 디버깅 추가
         console.warn("토큰이 만료됨. 로그인 창을 표시합니다.");
         localStorage.removeItem("token");
