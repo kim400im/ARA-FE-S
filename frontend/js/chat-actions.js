@@ -2,6 +2,24 @@
 import { messageInput, chatDescription, chatAction, chatContent, chatInput, loginPopup } from './dom-elements.js';
 import { addNewChat } from './chat-management.js';
 
+// 파일 상단에 waitForMarked 함수 추가
+function waitForMarked() {
+  return new Promise((resolve) => {
+    if (window.marked) {
+      resolve(window.marked);
+    } else {
+      const checkMarked = setInterval(() => {
+        if (window.marked) {
+          clearInterval(checkMarked);
+          resolve(window.marked);
+        }
+      }, 100);
+    }
+  });
+}
+
+
+
 // 버튼 활성화 상태 업데이트
 export function updateSendButtonState() {
   const userMessage = messageInput.value.trim();
@@ -73,6 +91,7 @@ export async function sendMessage() {
 
   // 서버 요청 처리
   try {
+    const marked = await waitForMarked();
     const token = localStorage.getItem('token');
 
     // 서버 요청: 메시지 전송 및 (필요시) 새 채팅방 생성
@@ -103,17 +122,42 @@ export async function sendMessage() {
       console.log(`Navigated to chatroom: ${chatroomId}`);
 
       // 챗봇 응답 메시지 추가
+      // const botMessageDiv = document.createElement('div');
+      // const typedSpan = document.createElement('span');
+      // botMessageDiv.appendChild(typedSpan);
+      // botMessageDiv.classList.add('message', 'bot-message');
+
       const botMessageDiv = document.createElement('div');
+      botMessageDiv.classList.add('message', 'bot-message');
       const typedSpan = document.createElement('span');
       botMessageDiv.appendChild(typedSpan);
-      botMessageDiv.classList.add('message', 'bot-message');
       chatMessages.appendChild(botMessageDiv);
+
+      // 1. \n을 실제 줄바꿈으로 변환
+      const formattedMessage = result.botMessage.replace(/\\n/g, '\n');
+
+      // 2. 마크다운으로 변환
+      // botMessageDiv.innerHTML = marked.parse(formattedMessage);
+      // 마크다운으로 변환
+      let formattedHTML;
+      if (typeof window.marked !== 'undefined') {
+        // botMessageDiv.innerHTML = window.marked.parse(formattedMessage);
+        formattedHTML = window.marked.parse(formattedMessage);
+      } else {
+        // botMessageDiv.textContent = formattedMessage;
+        // console.warn('Marked library not loaded, displaying plain text');
+        formattedHTML = formattedMessage;
+        console.warn('Marked library not loaded, displaying plain text');
+      }
+
+      // chatMessages.appendChild(botMessageDiv);
 
       // 챗봇 응답 스트림 에니메이션 옵션 설정 및 인스턴스 생성
       const typedOptions = {
-        strings: [result.botMessage],  // 서버에서 받은 메시지
+        strings: [formattedHTML],  // 서버에서 받은 메시지
         typeSpeed: 40,                 // 타이핑 속도 (밀리초 단위)
-        showCursor: false              // 커서 표시 여부
+        showCursor: false,              // 커서 표시 여부
+        contentType: 'html'  // HTML 태그를 해석하도록 설정
       };
 
       new Typed(typedSpan, typedOptions);
@@ -183,6 +227,8 @@ export async function loadChatroomData() {
       chatMessages.innerHTML = ""; // 기존 메시지 초기화
     }
 
+    const marked = await waitForMarked();  // marked가 로드될 때까지 대기
+
     // 메시지를 UI에 추가
     messages.forEach((message) => {
       const messageDiv = document.createElement("div");
@@ -190,7 +236,21 @@ export async function loadChatroomData() {
         "message",
         message.sender_type === "user" ? "user-message" : "bot-message"
       );
-      messageDiv.textContent = message.content;
+
+      if (message.sender_type === "user") {
+        messageDiv.textContent = message.content;
+      } else {
+        // 봇 메시지 처리
+        const formattedMessage = message.content.replace(/\\n/g, '\n');
+        // messageDiv.innerHTML = marked.parse(formattedMessage);
+        if (typeof window.marked !== 'undefined') {
+          messageDiv.innerHTML = window.marked.parse(formattedMessage);
+        } else {
+          messageDiv.textContent = formattedMessage;
+          console.warn('Marked library not loaded, displaying plain text');
+        }
+      }
+      // messageDiv.textContent = message.content;
       chatMessages.appendChild(messageDiv);
     });
 
