@@ -1,5 +1,5 @@
 // event-handlers.js
-import { messageInput, sendButton, loginPopup, signInButton, closeButtons, userButton, userInfoPopup, logoutButton, loginButton, signInPopup, headerLogo, chatDescription, chatAction, chatInput } from './dom-elements.js';
+import { messageInput, sendButton, loginPopup, signInButton, closeButtons, userButton, userInfoPopup, logoutButton, loginButton, signInPopup, headerLogo } from './dom-elements.js';
 import { updateSendButtonState, sendMessage, autoResize, loadChatroomData } from './chat-actions.js';
 import { initializeFileHandlers } from './file-handler.js';
 import { handleLogin, handleLogout, fetchUserInfo } from './auth.js';

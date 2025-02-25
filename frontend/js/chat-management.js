@@ -42,7 +42,7 @@ export function addNewChat(chatroomId) {
   moreButton.innerHTML = '<div class="material-icons">more_horiz</div>';
 
   newChat.appendChild(moreButton);
-  chatsListUl.appendChild(newChat);
+  chatsListUl.insertBefore(newChat, chatsListUl.firstChild);
   return newChat;
 }
 

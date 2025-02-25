@@ -20,9 +20,11 @@ export const signInButton = document.querySelector(".sign-in-button");
 export const closeButtons = document.querySelectorAll(".close-button");
 export const signInForm = document.getElementById("sign-in-form");
 
+export const chatContainer = document.querySelector('.chat-container');
 export const sideContainer = document.querySelector('.side-container');
 export const toggleButton = document.getElementById('toggle-sidebar');
 export const chatHeader = document.querySelector('.chat-header');
+export const headerLogoButton = document.querySelector('.header-logo-button');
 export const toggleSectionButtons = document.querySelectorAll('.toggle-section-button');
 
 export const addFileButton = document.getElementById('add-file-button');

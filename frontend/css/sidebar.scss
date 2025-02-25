@@ -2,10 +2,10 @@
 
 /* sidebar.scss */
 .toggle-button {
-  position: absolute;
+  position: fixed;
   left: 12px;
   top: 10px;
-  z-index: 10;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,8 +92,7 @@
   transition: height 0.3s ease;
 }
 
-.toggle-section-button,
-.add-chat-button {
+.toggle-section-button {
   width: 36px;
   height: 36px;
   display: flex;
@@ -107,6 +106,27 @@
   margin-left: auto;
 }
 
+.add-chat-button {
+  width : 50px;
+  height: 50px;
+  display: flex;
+  border: none;
+  border-radius: 6px;
+  padding: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: 12px;
+}
+
+.add-chat-icon {
+  width: 40px;
+  height: 40px;
+}
+
 .toggle-section-button:hover,
 .add-chat-button:hover {
   background-color: #eee;
@@ -115,11 +135,6 @@
 .toggle-icon {
   width: 24px;
   height: 24px;
-}
-
-.add-chat-icon {
-  width: 28px;
-  height: 28px;
 }
 
 .chat-list-icon {
